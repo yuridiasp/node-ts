@@ -1,8 +1,6 @@
 import { IUser, User } from "../models/User"
 import UserRepository from "../repositories/UserRepository"
 
-const userRepository = new UserRepository()
-
 interface response {
     message: string
     status: number
@@ -10,6 +8,7 @@ interface response {
 }
 
 interface IUserService {
+    userRepository: UserRepository
     createUserService: (id: string, name: string, email: string) => void
     getUsersService: () => Promise<response>
     getUserService: (id: string) => Promise<response>
@@ -18,16 +17,19 @@ interface IUserService {
 }
 
 export class UserService implements IUserService {
+    userRepository = new UserRepository()
+
     getUsersService = async () => {
-        const users = await userRepository.get()
+        const users = await this.userRepository.get()
 
         const message = users ? '' : 'Users not found'
         const status = users ? 200 : 204
 
         return { message, status, content: users }
     }
+    
     createUserService = async (id: string, name: string, email: string) => {
-        const result = await userRepository.insert(id, name, email)
+        const result = await this.userRepository.insert(id, name, email)
 
         const message = result ? '' : 'User not found'
         const status = result ? 201 : 204
@@ -36,7 +38,7 @@ export class UserService implements IUserService {
     }
 
     getUserService = async (id: string) => {
-        const user = await userRepository.findById(id)
+        const user = await this.userRepository.findById(id)
 
         const message = user ? '' : 'User not found'
         const status = user ? 200 : 204
@@ -45,7 +47,7 @@ export class UserService implements IUserService {
     }
 
     deleteUserService = async (id: string) => {
-        const result = await userRepository.delete(id)
+        const result = await this.userRepository.delete(id)
 
         const message = result ? '' : 'User not found'
         const status = result ? 200 : 204
@@ -54,7 +56,7 @@ export class UserService implements IUserService {
     }
 
     editUserService = async (user: IUser) => {
-        const result = await userRepository.update(user)
+        const result = await this.userRepository.update(user)
 
         const message = result ? '' : 'User not found'
         const status = result ? 200 : 204

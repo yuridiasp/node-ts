@@ -2,9 +2,9 @@ import { Router  } from "express"
 
 import { UserController } from "../controllers/UserController"
 
-const { createUserController, deleteUserController, editUserController, getUserController, getUsersController } = new UserController()
-
 export const routes = () => {
+    const { createUserController, deleteUserController, editUserController, getUserController, getUsersController } = new UserController()
+    
     const router = Router()
 
     router.get('/user', getUsersController)

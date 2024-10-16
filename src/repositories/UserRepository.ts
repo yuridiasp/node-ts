@@ -2,38 +2,44 @@ import db from "../db/db";
 import { IUser, User } from "../models/User";
 
 class UserRepository {
+    db: IUser[]
+
+    constructor(database = db) {
+        this.db = database
+    }
+
     insert = async (id: string, name: string, email: string) => {
         const newUser = new User(id, name, email)
 
-        db.push(newUser)
+        this.db.push(newUser)
 
         return true
     }
 
     update = async (newUser: IUser) => {
-        const index = db.findIndex(user => user.id === newUser.id)
+        const index = this.db.findIndex(user => user.id === newUser.id)
 
         if (index === -1)
             return false
         
-        db[index] = newUser
+        this.db[index] = newUser
         return true
     }
 
     delete = async (id: string) => {
-        const index = db.findIndex(user => user.id === id)
+        const index = this.db.findIndex(user => user.id === id)
 
         if (index === -1)
             return false
         
-        db.splice(index, 1)
+        this.db.splice(index, 1)
         
         return true
     }
 
-    get = async () => db
+    get = async () => this.db
 
-    findById = async (id: string) => db.find(user => user.id === id)
+    findById = async (id: string) => this.db.find(user => user.id === id)
 }
 
 export default UserRepository
