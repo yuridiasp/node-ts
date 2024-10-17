@@ -52,8 +52,9 @@ describe('UserService', () => {
         mockUserRepositoryInsert.mockReturnValueOnce(false)
 
         const { status, message } = await createUser(mockUser.id_user, mockUser.name, mockUser.email)
-        
+        console.log(message, status)
         /* expect(mockUserRepositoryInsert).toHaveBeenCalledWith('2', 'Yuri Dias', 'yuri@gmail.com') */
+        //TODO: Corrigir status code
         expect(status).toBe(HttpStatusCode.NoContent)
         expect(message).toBe(`Error: ${ErrosMessage.processFailure.userCreation}\n`)
     })

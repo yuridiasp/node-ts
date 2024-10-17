@@ -17,7 +17,7 @@ const mockUserControllerUpdateUser = jest.fn()
 describe('UserController', () => {
     const mockUser:IUser = {
         id_user: '2',
-        name: 'Yuri Dias Pereira',
+        name: 'Yuri',
         email: 'yuri@gmail.com',
         password: '12345'
     }
@@ -42,15 +42,16 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2',
-                name: 'Yuri',
-                email: 'yuri@gmail.com'
+                id_user: mockUser.id_user,
+                name: mockUser.name,
+                email: mockUser.email,
+                password: mockUser.password
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.createUserController(mockRequest, mockResponse)
+        await userController.createUser(mockRequest, mockResponse)
         
         expect(mockUserControllerCreateUser).toHaveBeenCalledWith(mockUser.id_user, mockUser.name, mockUser.email)
         expect(mockResponse.state.status).toBe(HttpStatusCode.Created)
@@ -61,15 +62,16 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2',
-                name: 'Yuri',
-                email: 'yuri@gmail.com'
+                id_user: mockUser.id_user,
+                name: mockUser.name,
+                email: mockUser.email,
+                password: mockUser.password
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.createUserController(mockRequest, mockResponse)
+        await userController.createUser(mockRequest, mockResponse)
         
         expect(mockUserControllerCreateUser).toHaveBeenCalledWith(mockUser.id_user, mockUser.name, mockUser.email)
         expect(mockResponse.state.status).toBe(HttpStatusCode.NoContent)
@@ -80,15 +82,16 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2',
-                name: 'Yuri Dias Pereira',
-                email: 'yuri@gmail.com'
+                id_user: mockUser.id_user,
+                name: mockUser.name,
+                email: mockUser.email,
+                password: mockUser.password
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.updateUserController(mockRequest, mockResponse)
+        await userController.updateUser(mockRequest, mockResponse)
         
         expect(mockUserControllerUpdateUser).toHaveBeenCalledWith(mockUser)
         expect(mockResponse.state.status).toBe(HttpStatusCode.OK)
@@ -99,15 +102,16 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2',
-                name: 'Yuri Dias Pereira',
-                email: 'yuri@gmail.com'
+                id_user: mockUser.id_user,
+                name: mockUser.name,
+                email: mockUser.email,
+                password: mockUser.password
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.updateUserController(mockRequest, mockResponse)
+        await userController.updateUser(mockRequest, mockResponse)
         
         expect(mockUserControllerUpdateUser).toHaveBeenCalledWith(mockUser)
         expect(mockResponse.state.status).toBe(HttpStatusCode.NoContent)
@@ -118,13 +122,13 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2'
+                id_user: mockUser.id_user
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.deleteUserController(mockRequest, mockResponse)
+        await userController.deleteUser(mockRequest, mockResponse)
         
         expect(mockUserControllerDeleteUser).toHaveBeenCalledWith(mockUser.id_user)
         expect(mockResponse.state.status).toBe(HttpStatusCode.OK)
@@ -135,13 +139,13 @@ describe('UserController', () => {
 
         const mockRequest = {
             body: {
-                id: '2'
+                id_user: mockUser.id_user
             }
         } as Request
 
         const mockResponse = makeMockResponse()
 
-        await userController.deleteUserController(mockRequest, mockResponse)
+        await userController.deleteUser(mockRequest, mockResponse)
         
         expect(mockUserControllerDeleteUser).toHaveBeenCalledWith(mockUser.id_user)
         expect(mockResponse.state.status).toBe(HttpStatusCode.NoContent)
@@ -188,7 +192,7 @@ describe('UserController', () => {
 
         const mockResponse = makeMockResponse()
 
-        await userController.getUsersController(mockRequest, mockResponse)
+        await userController.getUsers(mockRequest, mockResponse)
         
         expect(mockUserControllerGetUsers).toHaveBeenCalled()
         expect(mockResponse.state.status).toBe(HttpStatusCode.OK)
@@ -201,7 +205,7 @@ describe('UserController', () => {
 
         const mockResponse = makeMockResponse()
 
-        await userController.getUsersController(mockRequest, mockResponse)
+        await userController.getUsers(mockRequest, mockResponse)
         
         expect(mockUserControllerGetUsers).toHaveBeenCalled()
         expect(mockResponse.state.status).toBe(HttpStatusCode.NoContent)

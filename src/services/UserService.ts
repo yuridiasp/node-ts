@@ -76,7 +76,7 @@ export class UserService implements IUserService {
                 status: HttpStatusCode.NoContent
             }
         }
-
+        
         const newUser = new User(name, email, password)
 
         const result = await this.userRepository.createUser(newUser)

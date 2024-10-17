@@ -2,11 +2,11 @@ import { Request, Response } from 'express'
 import { UserService } from '../services/UserService'
 
 interface IUserController {
-    createUserController: (request: Request, response: Response) => void
-    getUsersController: (request: Request, response: Response) => void
+    createUser: (request: Request, response: Response) => void
+    getUsers: (request: Request, response: Response) => void
     findUserByID: (request: Request, response: Response) => void
-    deleteUserController: (request: Request, response: Response) => void
-    updateUserController: (request: Request, response: Response) => void
+    deleteUser: (request: Request, response: Response) => void
+    updateUser: (request: Request, response: Response) => void
 }
 
 export class UserController implements IUserController {
@@ -16,7 +16,7 @@ export class UserController implements IUserController {
         this.userService = userService
     }
 
-    getUsersController = async (request: Request, response: Response) => {
+    getUsers = async (request: Request, response: Response) => {
         const { content, message, status } = await this.userService.getUsers()
 
         if (!content.length || !content) {
@@ -26,13 +26,13 @@ export class UserController implements IUserController {
         response.status(status).json(content)
     }
 
-    deleteUserController = async (request: Request, response: Response) => {
-        const { message, status } = await this.userService.deleteUser(request.body.id)
+    deleteUser = async (request: Request, response: Response) => {
+        const { message, status } = await this.userService.deleteUser(request.body.id_user)
 
         response.status(status).json({ message })
     }
 
-    updateUserController = async (request: Request, response: Response) => {
+    updateUser = async (request: Request, response: Response) => {
         const { id_user, name, email, password } = request.body
 
         const { message, status } = await this.userService.updateUser({ id_user, name, email, password })
@@ -50,9 +50,9 @@ export class UserController implements IUserController {
         response.status(status).json({ content })
     }
 
-    createUserController = async (request: Request, response: Response) => {
-        const { id, name, email } = request.body
-        const { message, status } = await this.userService.createUser(id, name, email)
+    createUser = async (request: Request, response: Response) => {
+        const { id_user, name, email } = request.body
+        const { message, status } = await this.userService.createUser(id_user, name, email)
 
         response.status(status).json({ message })
     }
