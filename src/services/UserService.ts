@@ -1,65 +1,133 @@
-import { IUser, User } from "../models/User"
+import ErrosMessage from "../helpers/ErrorMessages"
+import HttpStatusCode from "../helpers/HTTPCode"
+import { IUser, User } from "../entities/User"
 import UserRepository from "../repositories/UserRepository"
+import { DeleteResult, EntityManager, UpdateResult } from "typeorm"
+import { AppDataSource } from "../database"
 
 interface response {
     message: string
     status: number
-    content?: User[] | User | undefined
+    content?: IUser | null | IUser[]
 }
 
 interface IUserService {
-    userRepository: UserRepository
-    createUserService: (id: string, name: string, email: string) => void
-    getUsersService: () => Promise<response>
-    getUserService: (id: string) => Promise<response>
-    deleteUserService: (id: string) => void
-    editUserService: (user: IUser) => void
+    createUser: (id: string, name: string, email: string) => void
+    getUsers: () => Promise<response>
+    findUserByID: (id: string) => Promise<response>
+    deleteUser: (id: string) => void
+    updateUser: (user: IUser) => void
+}
+
+function buildMessageResult (successCondiction: boolean | IUser | IUser[] | null | DeleteResult | UpdateResult, erros: string[], defaultMessage: string) {
+    let message = ''
+    let errorMessage = 'Error: '
+
+    if (!successCondiction) {
+        message = message.concat(defaultMessage, '\n')
+    }
+
+    if (erros.length) {
+        message = message.concat(erros.join('\n'))
+    }
+    
+    if (message.length) {
+        message = errorMessage.concat(message)
+    }
+    
+    return message
 }
 
 export class UserService implements IUserService {
-    userRepository = new UserRepository()
+    private userRepository: UserRepository
 
-    getUsersService = async () => {
-        const users = await this.userRepository.get()
+    constructor(userRepository = new UserRepository(AppDataSource.manager)) {
+        this.userRepository = userRepository
+    }
 
-        const message = users ? '' : 'Users not found'
-        const status = users ? 200 : 204
+    getUsers = async () => {
+        const users = await this.userRepository.getUsers()
+
+        const message = buildMessageResult(users, [], ErrosMessage.notFound.allUsers)
+        const status = users ? HttpStatusCode.OK : HttpStatusCode.NoContent
 
         return { message, status, content: users }
     }
     
-    createUserService = async (id: string, name: string, email: string) => {
-        const result = await this.userRepository.insert(id, name, email)
+    createUser = async (name: string, email: string, password: string) => {
 
-        const message = result ? '' : 'User not found'
-        const status = result ? 201 : 204
+        const erros: string[] = []
 
-        return { message, status }
+        if (!name) {
+            erros.push(ErrosMessage.missingArgument.name)
+        }
+
+        if (!email) {
+            erros.push(ErrosMessage.missingArgument.email)
+        }
+
+        if (!password) {
+            erros.push(ErrosMessage.missingArgument.password)
+        }
+
+        if (erros.length) {
+            return {
+                message: buildMessageResult(false, erros, ErrosMessage.processFailure.userCreation),
+                status: HttpStatusCode.NoContent
+            }
+        }
+
+        const newUser = new User(name, email, password)
+
+        const result = await this.userRepository.createUser(newUser)
+        
+        return {
+            message: buildMessageResult(result, erros, ErrosMessage.processFailure.userCreation),
+            status: HttpStatusCode.Created
+        }
     }
 
-    getUserService = async (id: string) => {
-        const user = await this.userRepository.findById(id)
+    findUserByID = async (id: string) => {
+        const erros: string[] = []
 
-        const message = user ? '' : 'User not found'
-        const status = user ? 200 : 204
+        if (!id) {
+            erros.push(ErrosMessage.missingArgument.id)
+        }
+
+        const user = erros.length ? null : await this.userRepository.findUserByID(id)
+
+        const message = buildMessageResult(user, erros, ErrosMessage.notFound.user)
+        const status = user ? HttpStatusCode.OK : HttpStatusCode.NoContent
 
         return { message, status, content: user }
     }
 
-    deleteUserService = async (id: string) => {
-        const result = await this.userRepository.delete(id)
+    deleteUser = async (id: string) => {
+        const erros: string[] = []
 
-        const message = result ? '' : 'User not found'
-        const status = result ? 200 : 204
+        if (!id) {
+            erros.push(ErrosMessage.missingArgument.id)
+        }
+
+        const result = erros.length ? false : await this.userRepository.deleteUser(id)
+
+        const message = buildMessageResult(result, erros, ErrosMessage.notFound.user)
+        const status = result ? HttpStatusCode.OK : HttpStatusCode.NoContent
 
         return { message, status }
     }
 
-    editUserService = async (user: IUser) => {
-        const result = await this.userRepository.update(user)
+    updateUser = async (user: IUser) => {
+        const erros: string[] = []
 
-        const message = result ? '' : 'User not found'
-        const status = result ? 200 : 204
+        if (!user) {
+            erros.push(ErrosMessage.missingArgument.user)
+        }
+
+        const result = erros.length ? false : await this.userRepository.updateUser(user)
+
+        const message = buildMessageResult(result, erros, ErrosMessage.notFound.user)
+        const status = result ? HttpStatusCode.OK : HttpStatusCode.NoContent
 
         return { message, status }
     }

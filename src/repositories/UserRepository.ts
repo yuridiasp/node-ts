@@ -1,45 +1,41 @@
-import db from "../db/db";
-import { IUser, User } from "../models/User";
+import { EntityManager, UpdateResult } from "typeorm";
+
+import { IUser, User } from "../entities/User";
 
 class UserRepository {
-    db: IUser[]
+    private manager: EntityManager
 
-    constructor(database = db) {
-        this.db = database
+    constructor(manager: EntityManager) {
+        this.manager = manager
+    }
+    
+    createUser = async (user: IUser): Promise<IUser | null> => {
+        return this.manager.save(user)
     }
 
-    insert = async (id: string, name: string, email: string) => {
-        const newUser = new User(id, name, email)
-
-        this.db.push(newUser)
-
-        return true
+    findUserByID = async (id: string): Promise<IUser | null> => {
+        return this.manager.findOne(User, {
+            where: {
+                id_user: id
+            }
+        })
     }
 
-    update = async (newUser: IUser) => {
-        const index = this.db.findIndex(user => user.id === newUser.id)
-
-        if (index === -1)
-            return false
-        
-        this.db[index] = newUser
-        return true
+    getUsers = async (): Promise<IUser[]> => {
+        return this.manager.find(User)
     }
 
-    delete = async (id: string) => {
-        const index = this.db.findIndex(user => user.id === id)
-
-        if (index === -1)
-            return false
-        
-        this.db.splice(index, 1)
-        
-        return true
+    deleteUser = async (id: string) => {
+        return this.manager.delete(User, {
+            id
+        })
     }
 
-    get = async () => this.db
-
-    findById = async (id: string) => this.db.find(user => user.id === id)
+    updateUser = async (user: IUser): Promise<UpdateResult> => {
+        return this.manager.update(User, {
+            
+        }, user)
+    }
 }
 
 export default UserRepository

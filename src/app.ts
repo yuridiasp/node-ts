@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 
-import routes from './routes/routes'
+import router from './routes/routes'
 
 export const App = () => {
     const app = express()
@@ -11,7 +11,7 @@ export const App = () => {
         response.status(200).json({ message: 'Dio Bank API' })
     })
 
-    app.use(routes())
+    app.use(router)
 
     return app
 }
